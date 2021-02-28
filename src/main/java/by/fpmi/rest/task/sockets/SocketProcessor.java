@@ -19,8 +19,8 @@ public class SocketProcessor implements Runnable {
     public void run() {
         try {
             readInputHeaders();
-            writeResponse("<html><body><h2>Made by </h2><p>Some text</p></body></html>");
-        } catch (Throwable throwable) {
+            writeResponse("<html><body><h2>Made by</h2><p>Some text</p></body></html>");
+        } catch (IOException throwable) {
             throwable.printStackTrace();
         } finally {
             try {
