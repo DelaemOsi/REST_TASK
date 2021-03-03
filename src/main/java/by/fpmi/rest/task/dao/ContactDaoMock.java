@@ -2,37 +2,54 @@ package by.fpmi.rest.task.dao;
 
 import by.fpmi.rest.task.entities.Contact;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ContactDaoMock implements ContactDao {
 
-    private Map<UUID, Contact>contacts = new HashMap<>();
+    private final Map<UUID, Contact> mockedDb = new HashMap<>();
 
     @Override
-    public void addContact(Contact contact) {
-        UUID id = UUID.randomUUID();
+    public void insertContact(Contact contact, UUID id) {
+        Contact newContact = Contact.Builder.newInstance()
+                .withId(id)
+                .withName(contact.getName())
+                .withSurname(contact.getSurname())
+                .withPhone(contact.getPhone())
+                .build();
+        mockedDb.put(id, newContact);
     }
 
     @Override
-    public void removeContact(UUID contact) {
-
+    public void removeContact(UUID id) {
+        mockedDb.remove(id);
     }
 
     @Override
-    public void updateContact(Contact contact, UUID id) {
-
+    public void updateContact(Contact updatedContact, UUID id) {
+        Optional<Contact> contact = get(id);
+        contact.ifPresent((c) -> updateContact(c, updatedContact));
+        //TODO: what we should do when contact not found?
     }
 
-    @Override
-    public Contact get(UUID id) {
-        return null;
+    private void updateContact(Contact old, Contact updated) {
+        var newName = Optional.ofNullable(updated.getName());
+        newName.ifPresent(old::setName);
+
+        var newSurname = Optional.ofNullable(updated.getSurname());
+        newSurname.ifPresent(old::setSurname);
+
+        var newPhone = Optional.ofNullable(updated.getPhone());
+        newPhone.ifPresent(old::setPhone);
     }
 
     @Override
     public List<Contact> getAll() {
-        return null;
+        return new ArrayList<>(mockedDb.values());
+    }
+
+    @Override
+    public Optional<Contact> get(UUID id) {
+        Contact contact = mockedDb.get(id);
+        return Optional.of(contact);
     }
 }

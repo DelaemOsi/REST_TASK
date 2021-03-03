@@ -4,6 +4,7 @@ import by.fpmi.rest.task.dao.ContactDao;
 import by.fpmi.rest.task.entities.Contact;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class ClientService {
@@ -30,7 +31,7 @@ public class ClientService {
         contactDao.removeContact(id);
     }
 
-    public Contact getContact(UUID id){
+    public Optional<Contact> getContact(UUID id){
         return contactDao.get(id);
     }
 }

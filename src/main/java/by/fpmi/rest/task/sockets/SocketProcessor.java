@@ -1,11 +1,12 @@
 package by.fpmi.rest.task.sockets;
 
-import by.fpmi.rest.task.service.ClientService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class SocketProcessor implements Runnable {
@@ -15,7 +16,8 @@ public class SocketProcessor implements Runnable {
     private final InputStream inputStream;
     private final OutputStream outputStream;
     private RequestType type;
-    private ClientService server;
+    private List<String> requestContent = new ArrayList<>();
+    private String requestAddress;
 
     public SocketProcessor(Socket socket) throws IOException {
         this.socket = socket;
@@ -43,7 +45,7 @@ public class SocketProcessor implements Runnable {
 
     private void handleResponse() throws IOException {
         String sentContent = "";
-        if(type == null){
+        if (type == null) {
             return;
         }
         switch (type) {
@@ -62,7 +64,7 @@ public class SocketProcessor implements Runnable {
             default:
                 sentContent = "Unknown request";
         }
-
+        sentContent += ": " + requestAddress;
         String response = "HTTP/1.1 200 OK\r\n" +
                 "Server: REST/2021-09-09\r\n" +
                 "Content-Type: text/html\r\n" +
@@ -80,6 +82,7 @@ public class SocketProcessor implements Runnable {
             if (string == null || string.trim().length() == 0) {
                 break;
             }
+            requestContent.add(string);
             if (string.contains("HTTP")) {
                 defineRequestType(string);
                 break;
@@ -88,8 +91,17 @@ public class SocketProcessor implements Runnable {
     }
 
     private void defineRequestType(String requestLine) {
-        String[] requests = requestLine.split("/");
+        String[] requests = requestLine.split(" ");
         String requestType = requests[0].trim();
         type = RequestType.valueOf(requestType);
+
+        if(hasAddressExtended(requests)){
+            requestAddress = requests[1];
+        }
+
+    }
+
+    private boolean hasAddressExtended(String[] requests) {
+        return requests.length > 2;
     }
 }

@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Contact {
-    private UUID id;
+    private final UUID id;
     private String name;
     private String surname;
     private String phone;
@@ -16,9 +16,14 @@ public class Contact {
         this.phone = phone;
     }
 
-    public Contact() {
-
+    public Contact(Builder builder)
+    {
+        this.id = builder.id;
+        this.name = builder.name;
+        this.surname = builder.surname;
+        this.phone = builder.phone;
     }
+
 
     public UUID getId() {
         return id;
@@ -35,6 +40,7 @@ public class Contact {
     public String getPhone() {
         return phone;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -62,5 +68,56 @@ public class Contact {
         result = 31 * result + (surname != null ? surname.hashCode() : 0);
         result = 31 * result + (phone != null ? phone.hashCode() : 0);
         return result;
+    }
+
+    public static class Builder {
+
+        private UUID id;
+        private String name;
+        private String surname;
+        private String phone;
+
+        public static Builder newInstance() {
+            return new Builder();
+        }
+
+        private Builder() {
+        }
+
+        public Builder withId(UUID id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder withSurname(String surname) {
+            this.surname = surname;
+            return this;
+        }
+
+        public Builder withPhone(String phone) {
+            this.phone = phone;
+            return this;
+        }
+
+        public Contact build() {
+            return new Contact(this);
+        }
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }
