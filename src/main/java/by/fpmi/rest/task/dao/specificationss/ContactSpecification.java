@@ -1,4 +1,4 @@
-package by.fpmi.rest.task.repository.specificationss;
+package by.fpmi.rest.task.dao.specificationss;
 
 import by.fpmi.rest.task.entities.Contact;
 
