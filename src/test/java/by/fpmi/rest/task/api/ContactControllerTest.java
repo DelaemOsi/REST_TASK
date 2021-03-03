@@ -13,26 +13,22 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class ContactControllerTest {
 
     private static final int OK_CODE = 200;
+    private static final String URL = "http://localhost:8080";
 
     @Test
     public void testGetAllContactsShouldReturnContacts() throws IOException {
 
         ObjectMapper mapper = new ObjectMapper();
         CloseableHttpClient client = HttpClients.createDefault();
-        HttpGet request = new HttpGet("http://localhost:8080");
+        HttpGet request = new HttpGet(URL);
 
         CloseableHttpResponse response = client.execute(request);
         int executionCode = response.getStatusLine().getStatusCode();
         Assert.assertEquals(OK_CODE, executionCode);
-
     }
-
-
 }
