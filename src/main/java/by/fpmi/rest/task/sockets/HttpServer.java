@@ -1,16 +1,22 @@
 package by.fpmi.rest.task.sockets;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class HttpServer {
-    public static void main(String[] args) throws IOException {
-        ServerSocket server = new ServerSocket(8080);
+    public void run() throws IOException {
+        ServerSocket serverSocket = new ServerSocket(8080);
         while (true) {
-            Socket socket = server.accept();
-            System.err.println("Client accepted");
-            new Thread(new SocketProcessor(socket)).start();
+            Socket clientSocket = serverSocket.accept();
+            new Thread(new SocketProcessor(clientSocket)).start();
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        HttpServer server = new HttpServer();
+        server.run();
     }
 }
