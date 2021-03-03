@@ -20,7 +20,4 @@ public interface ContactDao {
     Optional<Contact> get(UUID id);
 
     List<Contact> getAll();
-
-
-
 }
