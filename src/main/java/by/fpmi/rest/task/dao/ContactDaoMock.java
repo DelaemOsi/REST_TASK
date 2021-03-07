@@ -9,7 +9,8 @@ public class ContactDaoMock implements ContactDao {
     private final Map<UUID, Contact> mockedDb = new HashMap<>();
 
     @Override
-    public void insertContact(Contact contact, UUID id) {
+    public void addContact(Contact contact) {
+        UUID id = UUID.randomUUID();
         Contact newContact = Contact.Builder.newInstance()
                 .withId(id)
                 .withName(contact.getName())
@@ -26,7 +27,7 @@ public class ContactDaoMock implements ContactDao {
 
     @Override
     public void updateContact(Contact updatedContact, UUID id) {
-        Optional<Contact> contact = get(id);
+        Optional<Contact> contact = getContact(id);
         contact.ifPresent((c) -> updateContact(c, updatedContact));
         //TODO: what we should do when contact not found?
     }
@@ -48,7 +49,7 @@ public class ContactDaoMock implements ContactDao {
     }
 
     @Override
-    public Optional<Contact> get(UUID id) {
+    public Optional<Contact> getContact(UUID id) {
         Contact contact = mockedDb.get(id);
         return Optional.of(contact);
     }

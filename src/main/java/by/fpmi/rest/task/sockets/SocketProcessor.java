@@ -1,5 +1,7 @@
 package by.fpmi.rest.task.sockets;
 
+import by.fpmi.rest.task.entities.Contact;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -7,6 +9,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 public class SocketProcessor implements Runnable {
@@ -78,28 +81,48 @@ public class SocketProcessor implements Runnable {
 
     private void readInputHeaders() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        while (true) {
-            String string = reader.readLine();
-            if (string == null || string.trim().length() == 0) {
-                break;
-            }
-            requestContent.add(string);
-            if (string.contains("HTTP")) {
-                defineRequestType(string);
-                break;
+        String string;
+        do {
+            string = reader.readLine();
+            if(string != null) {
+                requestContent.add(string);
+                if (string.contains("HTTP")) {
+                    defineRequestType(string);
+                }
             }
         }
+        while (string != null && string.trim().length() != 0);
+        reader.readLine();
+        parseBody(reader);
+    }
+
+    private Optional<Contact> parseBody(BufferedReader reader) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        String body = "";
+        String currentString;
+        do {
+            currentString = reader.readLine();
+            requestContent.add(currentString);
+            body = body.concat(currentString);
+        }
+        while (currentString != null && currentString.trim().length() != 0);
+        Optional<Contact>contact = Optional.of(mapper.readValue(body, Contact.class));
+        return contact;
     }
 
     private void defineRequestType(String requestLine) {
+
         String[] requests = requestLine.split(" ");
         String requestType = requests[0].trim();
         type = RequestType.valueOf(requestType);
 
-        if(hasAddressExtended(requests)){
+        if (hasAddressExtended(requests)) {
             requestAddress = requests[1];
         }
         message = requestLine;
+//        if (true) {
+//            Contact newContact = new Gson()
+//        }
     }
 
     private boolean hasAddressExtended(String[] requests) {
