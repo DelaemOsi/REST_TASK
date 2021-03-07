@@ -18,6 +18,7 @@ public class SocketProcessor implements Runnable {
     private RequestType type;
     private List<String> requestContent = new ArrayList<>();
     private String requestAddress;
+    private String message;
 
     public SocketProcessor(Socket socket) throws IOException {
         this.socket = socket;
@@ -98,7 +99,7 @@ public class SocketProcessor implements Runnable {
         if(hasAddressExtended(requests)){
             requestAddress = requests[1];
         }
-
+        message = requestLine;
     }
 
     private boolean hasAddressExtended(String[] requests) {
