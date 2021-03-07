@@ -1,33 +1,36 @@
 package by.fpmi.rest.task.sockets;
 
+import by.fpmi.rest.task.api.ContactController;
+import by.fpmi.rest.task.api.NonExistedContactException;
+import by.fpmi.rest.task.dao.ContactDao;
+import by.fpmi.rest.task.dao.ContactDaoMock;
 import by.fpmi.rest.task.entities.Contact;
+import by.fpmi.rest.task.sockets.parsers.ClientRequest;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.UUID;
 
 public class SocketProcessor implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger(SocketProcessor.class);
+    private static final ContactDao DAO = new ContactDaoMock();
 
     private final Socket socket;
     private final InputStream inputStream;
     private final OutputStream outputStream;
-    private RequestType type;
-    private List<String> requestContent = new ArrayList<>();
-    private String requestAddress;
-    private String message;
+    private ClientRequest clientRequest = new ClientRequest();
+    private ObjectMapper mapper = new ObjectMapper();
 
     public SocketProcessor(Socket socket) throws IOException {
         this.socket = socket;
         this.inputStream = socket.getInputStream();
         this.outputStream = socket.getOutputStream();
-
     }
 
     @Override
@@ -35,7 +38,7 @@ public class SocketProcessor implements Runnable {
         try {
             readInputHeaders();
             handleResponse();
-        } catch (IOException e) {
+        } catch (IOException | NonExistedContactException e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
             try {
@@ -47,28 +50,42 @@ public class SocketProcessor implements Runnable {
         }
     }
 
-    private void handleResponse() throws IOException {
+    private void handleResponse() throws IOException, NonExistedContactException {
         String sentContent = "";
+        RequestType type = clientRequest.getRequestType();
         if (type == null) {
             return;
         }
+        ContactController controller = new ContactController(DAO);
         switch (type) {
             case GET:
-                sentContent = "You sent get";
+                String address = clientRequest.getAddress();
+                if (address != "") {
+                    UUID searchedId = UUID.fromString(address);
+                    Contact contact = controller.getContact(searchedId);
+                    sentContent = mapper.writeValueAsString(contact);
+                } else {
+                    List<Contact> contacts = controller.getAll();
+                    sentContent = mapper.writeValueAsString(contacts);
+                }
                 break;
             case PUT:
-                sentContent = "You sent put";
+                UUID updateId = UUID.fromString(clientRequest.getAddress());
+                Optional<Contact> contactToUpdate = clientRequest.getBody();
+                contactToUpdate.ifPresent(contact -> controller.updateContact(contact, updateId));
                 break;
             case POST:
-                sentContent = "You sent post";
+                Optional<Contact> newContact = clientRequest.getBody();
+                newContact.ifPresent(controller::addContact);
                 break;
             case DELETE:
-                sentContent = "You sent delete";
+                UUID deleteId = UUID.fromString(clientRequest.getAddress());
+                controller.removeContact(deleteId);
                 break;
             default:
                 sentContent = "Unknown request";
         }
-        sentContent += ": " + requestAddress;
+
         String response = "HTTP/1.1 200 OK\r\n" +
                 "Server: REST/2021-09-09\r\n" +
                 "Content-Type: text/html\r\n" +
@@ -84,29 +101,33 @@ public class SocketProcessor implements Runnable {
         String string;
         do {
             string = reader.readLine();
-            if(string != null) {
-                requestContent.add(string);
+            if (string != null) {
                 if (string.contains("HTTP")) {
                     defineRequestType(string);
                 }
             }
         }
         while (string != null && string.trim().length() != 0);
-        reader.readLine();
-        parseBody(reader);
+        clientRequest.setBody(parseBody(reader));
     }
 
     private Optional<Contact> parseBody(BufferedReader reader) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        String body = "";
+        StringBuilder body = new StringBuilder();
         String currentString;
-        do {
+        while (true) {
             currentString = reader.readLine();
-            requestContent.add(currentString);
-            body = body.concat(currentString);
+            if (currentString == null) {
+                break;
+            }
+            body.append(currentString);
         }
-        while (currentString != null && currentString.trim().length() != 0);
-        Optional<Contact>contact = Optional.of(mapper.readValue(body, Contact.class));
+
+        String result = body.toString();
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
+        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+        Optional<Contact> contact = Optional.ofNullable(mapper.readValue(result, Contact.class));
         return contact;
     }
 
@@ -114,15 +135,13 @@ public class SocketProcessor implements Runnable {
 
         String[] requests = requestLine.split(" ");
         String requestType = requests[0].trim();
-        type = RequestType.valueOf(requestType);
+        RequestType type = RequestType.valueOf(requestType);
+        clientRequest.setRequestType(type);
 
         if (hasAddressExtended(requests)) {
-            requestAddress = requests[1];
+            String address = requests[1].replace("/", "");
+            clientRequest.setAddress(address);
         }
-        message = requestLine;
-//        if (true) {
-//            Contact newContact = new Gson()
-//        }
     }
 
     private boolean hasAddressExtended(String[] requests) {

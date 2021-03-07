@@ -11,16 +11,16 @@ public class HttpServer {
 
     private final static int THREADS_COUNT = 32;
 
-    public void run() throws IOException {
+    public void run() throws IOException, InterruptedException {
         ServerSocket serverSocket = new ServerSocket(8080);
-        ExecutorService service = Executors.newFixedThreadPool(THREADS_COUNT);
+        ExecutorService service = Executors.newFixedThreadPool(32);
         while (true) {
             Socket clientSocket = serverSocket.accept();
             service.execute(new SocketProcessor(clientSocket));
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         HttpServer server = new HttpServer();
         server.run();
     }

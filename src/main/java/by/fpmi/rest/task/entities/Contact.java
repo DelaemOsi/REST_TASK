@@ -1,5 +1,7 @@
 package by.fpmi.rest.task.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -9,7 +11,8 @@ public class Contact {
     private String surname;
     private String phone;
 
-    public Contact(UUID id, String name, String surname, String phone) {
+    public Contact(@JsonProperty("id") UUID id, @JsonProperty("name") String name,
+                   @JsonProperty("surname") String surname, @JsonProperty("phone")String phone) {
         this.id = id;
         this.name = name;
         this.surname = surname;
