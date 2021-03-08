@@ -15,12 +15,12 @@ import java.util.UUID;
 
 public class RequestHandler {
 
-
     private final ObjectMapper mapper = new ObjectMapper();
-    private final OutputStream outputStream;
+    private final ResponseWriter responseWriter;
+
 
     public RequestHandler(OutputStream outputStream) {
-        this.outputStream = outputStream;
+        this.responseWriter = new ResponseWriter(outputStream);
     }
 
     public void handle(ClientRequest request) throws IOException, NonExistedContactException {
@@ -30,7 +30,6 @@ public class RequestHandler {
             return;
         }
         ContactController controller = new ContactController();
-        var tmp = ContactController.contactDao;
         switch (type) {
             case GET:
                 sentContent = handleGet(request, controller);
@@ -47,15 +46,7 @@ public class RequestHandler {
             default:
                 sentContent = "Unknown request";
         }
-
-        String response = "HTTP/1.1 200 OK\r\n" +
-                "Server: REST/2021-09-09\r\n" +
-                "Content-Type: application/json\r\n" +
-                "Content-Length: " + sentContent.length() + "\r\n" +
-                "Connection: close\r\n\r\n";
-        String result = response + sentContent;
-        outputStream.write(result.getBytes());
-        outputStream.flush();
+        responseWriter.write(sentContent);
     }
 
     private void handleDelete(ClientRequest request, ContactController controller) {
@@ -74,7 +65,8 @@ public class RequestHandler {
         contactToUpdate.ifPresent(contact -> controller.updateContact(contact, updateId));
     }
 
-    private String handleGet(ClientRequest request, ContactController controller) throws NonExistedContactException, JsonProcessingException {
+    private String handleGet(ClientRequest request, ContactController controller) throws NonExistedContactException,
+            JsonProcessingException {
         String sentContent;
         String address = request.getAddress();
         if (!address.equals("")) {

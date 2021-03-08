@@ -8,12 +8,6 @@ public class ContactDaoMock implements ContactDao {
 
     private final Map<UUID, Contact> mockedDb = new HashMap<>();
 
-     {
-        mockedDb.put(UUID.fromString("459c91c4-90b8-47ce-8bae-bf80f13e484d"), new Contact(UUID.fromString("459c91c4-90b8-47ce-8bae-bf80f13e484d"), "Igar",
-                "P", "12-09-55"));
-    }
-
-
     @Override
     public void addContact(Contact contact) {
         UUID id = UUID.randomUUID();

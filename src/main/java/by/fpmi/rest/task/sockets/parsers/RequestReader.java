@@ -4,12 +4,14 @@ import by.fpmi.rest.task.entities.Contact;
 import by.fpmi.rest.task.sockets.RequestType;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Optional;
+import java.util.*;
 
 public class RequestReader {
 
@@ -40,18 +42,19 @@ public class RequestReader {
         while (requestLine != null && requestLine.trim().length() != 0);
         RequestType requestType = request.getRequestType();
         if (requestType == RequestType.POST || requestType == RequestType.PUT) {
-            Contact contact = parseBody(reader, request);
+            Contact contact = parseBody(reader);
             request.setBody(Optional.of(contact));
         }
         return request;
     }
 
-    private Contact parseBody(BufferedReader reader, ClientRequest request) throws IOException {
+    private Contact parseBody(BufferedReader reader) throws IOException {
         StringBuilder body = new StringBuilder();
         while (true) {
             String currentString = reader.readLine();
             body.append(currentString);
-            if (currentString.trim().length() == 0 || currentString.trim().equals("}")) {
+            String trimmedString = currentString.trim();
+            if (trimmedString.isEmpty() || trimmedString.equals("}")) {
                 break;
             }
         }
