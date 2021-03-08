@@ -6,9 +6,11 @@ import by.fpmi.rest.task.sockets.RequestType;
 import java.util.Optional;
 
 public class ClientRequest {
+
     private String address;
     private RequestType requestType;
     private Optional<Contact>body;
+
 
     public ClientRequest(){
 

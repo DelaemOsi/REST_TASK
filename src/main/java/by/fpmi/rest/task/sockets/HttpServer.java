@@ -9,18 +9,16 @@ import java.util.concurrent.Executors;
 
 public class HttpServer {
 
-    private final static int THREADS_COUNT = 32;
-
-    public void run() throws IOException, InterruptedException {
+    public void run() throws IOException {
         ServerSocket serverSocket = new ServerSocket(8080);
-        ExecutorService service = Executors.newFixedThreadPool(32);
+        ExecutorService service = Executors.newSingleThreadExecutor();
         while (true) {
             Socket clientSocket = serverSocket.accept();
             service.execute(new SocketProcessor(clientSocket));
         }
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
         HttpServer server = new HttpServer();
         server.run();
     }
