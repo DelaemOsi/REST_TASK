@@ -4,13 +4,13 @@ import by.fpmi.rest.task.api.ContactController;
 import by.fpmi.rest.task.api.NonExistedContactException;
 import by.fpmi.rest.task.entities.Contact;
 import by.fpmi.rest.task.sockets.RequestType;
+import by.fpmi.rest.task.sockets.data.ClientRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class RequestHandler {
@@ -55,14 +55,14 @@ public class RequestHandler {
     }
 
     private void handlePost(ClientRequest request, ContactController controller) {
-        Optional<Contact> newContact = request.getBody();
-        newContact.ifPresent(controller::addContact);
+        Contact newContact = request.getBody();
+        controller.addContact(newContact);
     }
 
     private void handlePut(ClientRequest request, ContactController controller) {
         UUID updateId = UUID.fromString(request.getAddress());
-        Optional<Contact> contactToUpdate = request.getBody();
-        contactToUpdate.ifPresent(contact -> controller.updateContact(contact, updateId));
+        Contact contactToUpdate = request.getBody();
+        controller.updateContact(contactToUpdate, updateId);
     }
 
     private String handleGet(ClientRequest request, ContactController controller) throws NonExistedContactException,

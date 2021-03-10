@@ -3,10 +3,11 @@ package by.fpmi.rest.task.dao;
 import by.fpmi.rest.task.entities.Contact;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class ContactDaoMock implements ContactDao {
+public class MapBasedContactDao implements ContactDao {
 
-    private final Map<UUID, Contact> mockedDb = new HashMap<>();
+    private final Map<UUID, Contact> mockedDb = new ConcurrentHashMap<>();
 
     @Override
     public void addContact(Contact contact) {
@@ -29,7 +30,6 @@ public class ContactDaoMock implements ContactDao {
     public void updateContact(Contact updatedContact, UUID id) {
         Optional<Contact> contact = getContact(id);
         contact.ifPresent((c) -> updateContact(c, updatedContact));
-        //TODO: what we should do when contact not found?
     }
 
     private void updateContact(Contact old, Contact updated) {

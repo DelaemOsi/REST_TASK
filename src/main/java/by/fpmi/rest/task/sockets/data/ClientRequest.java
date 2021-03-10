@@ -1,15 +1,14 @@
-package by.fpmi.rest.task.sockets.parsers;
+package by.fpmi.rest.task.sockets.data;
 
 import by.fpmi.rest.task.entities.Contact;
 import by.fpmi.rest.task.sockets.RequestType;
 
-import java.util.Optional;
 
 public class ClientRequest {
 
     private String address;
     private RequestType requestType;
-    private Optional<Contact>body;
+    private Contact body;
 
 
     public ClientRequest(){
@@ -32,11 +31,11 @@ public class ClientRequest {
         this.requestType = requestType;
     }
 
-    public Optional<Contact> getBody() {
+    public Contact getBody() {
         return body;
     }
 
-    public void setBody(Optional<Contact> body) {
+    public void setBody(Contact body) {
         this.body = body;
     }
 }

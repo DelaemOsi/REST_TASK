@@ -1,7 +1,7 @@
 package by.fpmi.rest.task.api;
 
 import by.fpmi.rest.task.dao.ContactDao;
-import by.fpmi.rest.task.dao.ContactDaoMock;
+import by.fpmi.rest.task.dao.MapBasedContactDao;
 import by.fpmi.rest.task.entities.Contact;
 
 import java.util.List;
@@ -9,10 +9,9 @@ import java.util.UUID;
 
 
 public class ContactController {
-    public static final ContactDao contactDao = new ContactDaoMock();
+    public static final ContactDao contactDao = new MapBasedContactDao();
 
     public ContactController() {
-
     }
 
     public List<Contact> getAll() {

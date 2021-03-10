@@ -2,16 +2,15 @@ package by.fpmi.rest.task.sockets.parsers;
 
 import by.fpmi.rest.task.entities.Contact;
 import by.fpmi.rest.task.sockets.RequestType;
+import by.fpmi.rest.task.sockets.data.ClientRequest;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.IOUtils;
 
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.*;
 
 public class RequestReader {
 
@@ -43,7 +42,7 @@ public class RequestReader {
         RequestType requestType = request.getRequestType();
         if (requestType == RequestType.POST || requestType == RequestType.PUT) {
             Contact contact = parseBody(reader);
-            request.setBody(Optional.of(contact));
+            request.setBody(contact);
         }
         return request;
     }
@@ -74,8 +73,5 @@ public class RequestReader {
         return address.replace("/", "");
     }
 
-    private boolean hasAddressExtended(String[] requests) {
-        return requests.length > 2;
-    }
 
 }
