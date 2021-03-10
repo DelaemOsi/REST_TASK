@@ -1,13 +1,15 @@
 package by.fpmi.rest.task.api;
 
-public class NonExistedContactException extends Exception {
-    public NonExistedContactException(String s) {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+
+public class NonExistedContactException extends HttpClientErrorException {
+
+    public NonExistedContactException(HttpStatus statusCode) {
+        super(statusCode);
     }
 
-    public NonExistedContactException() {
-    }
-
-    public NonExistedContactException(String message, Throwable cause) {
-        super(message, cause);
+    public NonExistedContactException(HttpStatus statusCode, String statusText) {
+        super(statusCode, statusText);
     }
 }

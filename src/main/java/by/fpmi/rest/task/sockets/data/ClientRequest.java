@@ -10,7 +10,6 @@ public class ClientRequest {
     private RequestType requestType;
     private Contact body;
 
-
     public ClientRequest(){
 
     }

@@ -11,6 +11,7 @@ import java.io.*;
 import java.net.Socket;
 
 public class SocketProcessor implements Runnable {
+
     private static final Logger LOGGER = LogManager.getLogger(SocketProcessor.class);
 
     private final Socket socket;

@@ -3,6 +3,7 @@ package by.fpmi.rest.task.api;
 import by.fpmi.rest.task.dao.ContactDao;
 import by.fpmi.rest.task.dao.MapBasedContactDao;
 import by.fpmi.rest.task.entities.Contact;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class ContactController {
 
     public Contact getContact(UUID id) throws NonExistedContactException {
         return contactDao.getContact(id).orElseThrow(
-                () -> new NonExistedContactException("Contact with id " + id + " don't exists")
+                () -> new NonExistedContactException(HttpStatus.NOT_FOUND, "Contact with id " + id + " don't exists")
         );
     }
 }
