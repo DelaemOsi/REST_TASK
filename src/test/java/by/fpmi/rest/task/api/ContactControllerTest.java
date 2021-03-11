@@ -10,9 +10,17 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.testng.Assert;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 
 public class ContactControllerTest {
@@ -23,18 +31,51 @@ public class ContactControllerTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Test
+    public void googleUltimateMultithreadingUltraGetTest() throws ExecutionException, InterruptedException {
+        int threadsCount = 1000;
+        int operationsCount = 100;
+
+        ExecutorService service = Executors.newFixedThreadPool(threadsCount);
+        List<Future<?>> results = new ArrayList<>();
+
+        for (int i = 0; i < threadsCount; i++) {
+            results.add(service.submit(() -> {
+                for (int j = 0; j < operationsCount; j++) {
+                    CloseableHttpClient client = HttpClients.createDefault();
+                    HttpGet request = new HttpGet(URL);
+                    CloseableHttpResponse response = null;
+                    try {
+                        response = client.execute(request);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    int executionCode = Objects.requireNonNull(response)
+                            .getStatusLine()
+                            .getStatusCode();
+                    Assert.assertEquals(OK_CODE, executionCode);
+                }
+            }));
+        }
+        for (Future<?> future : results) {
+            future.get();
+        }
+        service.shutdown();
+    }
+
+    @Test
     public void testGetAllContactsShouldReturnContacts() throws IOException {
 
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet request = new HttpGet(URL);
 
-        CloseableHttpResponse response = client.execute(request);
-        HttpEntity entity = response.getEntity();
-        var result = mapper.readValue(entity.getContent(),Contacts[].class);
+        CloseableHttpResponse response;
+        response = client.execute(request);
+
         int executionCode = response.getStatusLine().getStatusCode();
         Assert.assertEquals(OK_CODE, executionCode);
     }
 
+    @Ignore
     @Test
     public void testPostShouldReturnValidCode() throws IOException {
 
@@ -55,6 +96,7 @@ public class ContactControllerTest {
         Assert.assertEquals(OK_CODE, executionCode);
     }
 
+    @Ignore
     @Test
     public void testPostAndCheckData() throws IOException {
 
@@ -77,6 +119,6 @@ public class ContactControllerTest {
 
         CloseableHttpResponse getResponse = client.execute(request);
         HttpEntity entity = response.getEntity();
-        var result = mapper.readValue(entity.getContent(),Contacts[].class);
+        var result = mapper.readValue(entity.getContent(), Contacts[].class);
     }
 }

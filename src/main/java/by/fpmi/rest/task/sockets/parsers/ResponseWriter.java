@@ -1,5 +1,7 @@
 package by.fpmi.rest.task.sockets.parsers;
 
+import by.fpmi.rest.task.sockets.data.Response;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -11,12 +13,13 @@ public class ResponseWriter {
     }
 
     public void write(String sentContent) throws IOException {
-        String response = "HTTP/1.1 200 OK\r\n" +
-                "Server: REST/2021-09-09\r\n" +
-                "Content-Type: application/json\r\n" +
-                "Content-Length: " + sentContent.length() + "\r\n" +
-                "Connection: close\r\n\r\n";
-        String result = response + sentContent;
+        Response resp = new Response();
+        resp.setLine("HTTP/1.1 200 OK");
+        resp.addHeader("Server", "REST");
+        resp.addHeader("Content-Type", "application/json");
+        resp.addHeader("Content-Length", Integer.toString(sentContent.length()));
+        resp.addHeader("Connection", "close");
+        String result = resp.buildResponse()+ "\r\n" + sentContent;
         out.write(result.getBytes());
         out.flush();
     }
