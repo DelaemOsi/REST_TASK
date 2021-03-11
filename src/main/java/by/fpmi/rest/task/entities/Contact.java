@@ -12,15 +12,14 @@ public class Contact {
     private String phone;
 
     public Contact(@JsonProperty("id") UUID id, @JsonProperty("name") String name,
-                   @JsonProperty("surname") String surname, @JsonProperty("phone")String phone) {
+                   @JsonProperty("surname") String surname, @JsonProperty("phone") String phone) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.phone = phone;
     }
 
-    public Contact(Builder builder)
-    {
+    public Contact(Builder builder) {
         this.id = builder.id;
         this.name = builder.name;
         this.surname = builder.surname;
@@ -51,17 +50,8 @@ public class Contact {
         if (!(o instanceof Contact)) return false;
 
         Contact contact = (Contact) o;
-
-        if (!Objects.equals(id, contact.id)) {
-            return false;
-        }
-        if (!Objects.equals(name, contact.name)) {
-            return false;
-        }
-        if (!Objects.equals(surname, contact.surname)) {
-            return false;
-        }
-        return Objects.equals(phone, contact.phone);
+        return Objects.equals(id, contact.id) && Objects.equals(name, contact.name) &&
+                Objects.equals(surname, contact.surname) && Objects.equals(phone, contact.phone);
     }
 
     @Override
