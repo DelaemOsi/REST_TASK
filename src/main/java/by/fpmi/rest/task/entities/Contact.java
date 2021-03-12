@@ -1,35 +1,31 @@
 package by.fpmi.rest.task.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
-import java.util.UUID;
 
 public class Contact {
-    private final UUID id;
+
+    @JsonProperty("name")
     private String name;
+
+    @JsonProperty("surname")
     private String surname;
+
+    @JsonProperty("phone")
     private String phone;
 
-    public Contact(@JsonProperty("id") UUID id, @JsonProperty("name") String name,
-                   @JsonProperty("surname") String surname, @JsonProperty("phone") String phone) {
-        this.id = id;
+    @JsonCreator
+    public Contact() {
+    }
+
+    public Contact(String name, String surname, String phone) {
         this.name = name;
         this.surname = surname;
         this.phone = phone;
     }
 
-    public Contact(Builder builder) {
-        this.id = builder.id;
-        this.name = builder.name;
-        this.surname = builder.surname;
-        this.phone = builder.phone;
-    }
-
-
-    public UUID getId() {
-        return id;
-    }
 
     public String getName() {
         return name;
@@ -44,64 +40,6 @@ public class Contact {
     }
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Contact)) return false;
-
-        Contact contact = (Contact) o;
-        return Objects.equals(id, contact.id) && Objects.equals(name, contact.name) &&
-                Objects.equals(surname, contact.surname) && Objects.equals(phone, contact.phone);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (surname != null ? surname.hashCode() : 0);
-        result = 31 * result + (phone != null ? phone.hashCode() : 0);
-        return result;
-    }
-
-    public static class Builder {
-
-        private UUID id;
-        private String name;
-        private String surname;
-        private String phone;
-
-        public static Builder newInstance() {
-            return new Builder();
-        }
-
-        private Builder() {
-        }
-
-        public Builder withId(UUID id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder withName(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder withSurname(String surname) {
-            this.surname = surname;
-            return this;
-        }
-
-        public Builder withPhone(String phone) {
-            this.phone = phone;
-            return this;
-        }
-
-        public Contact build() {
-            return new Contact(this);
-        }
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -112,5 +50,24 @@ public class Contact {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Contact)) return false;
+
+        Contact contact = (Contact) o;
+
+        return Objects.equals(name, contact.name) &&
+                Objects.equals(surname, contact.surname) && Objects.equals(phone, contact.phone);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (surname != null ? surname.hashCode() : 0);
+        result = 31 * result + (phone != null ? phone.hashCode() : 0);
+        return result;
     }
 }

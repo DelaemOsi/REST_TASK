@@ -7,23 +7,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MapBasedContactDao implements ContactDao {
 
-    private final Map<UUID, Contact> mockedDb = new ConcurrentHashMap<>();
+    private final Map<UUID, Contact> map = new ConcurrentHashMap<>();
 
     @Override
     public void addContact(Contact contact) {
         UUID id = UUID.randomUUID();
-        Contact newContact = Contact.Builder.newInstance()
-                .withId(id)
-                .withName(contact.getName())
-                .withSurname(contact.getSurname())
-                .withPhone(contact.getPhone())
-                .build();
-        mockedDb.put(id, newContact);
+        map.put(id, contact);
     }
 
     @Override
     public void removeContact(UUID id) {
-        mockedDb.remove(id);
+        map.remove(id);
     }
 
     @Override
@@ -45,12 +39,12 @@ public class MapBasedContactDao implements ContactDao {
 
     @Override
     public List<Contact> getAll() {
-        return new ArrayList<>(mockedDb.values());
+        return new ArrayList<>(map.values());
     }
 
     @Override
     public Optional<Contact> getContact(UUID id) {
-        Contact contact = mockedDb.get(id);
+        Contact contact = map.get(id);
         return Optional.ofNullable(contact);
     }
 }

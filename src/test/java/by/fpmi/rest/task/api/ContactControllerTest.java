@@ -81,11 +81,7 @@ public class ContactControllerTest {
 
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost request = new HttpPost(URL);
-        Contact newContact = Contact.Builder.newInstance()
-                .withName("Test")
-                .withSurname("Testovich")
-                .withPhone("12-12-12-12")
-                .build();
+        Contact newContact = new Contact("Test","Testovich","12-12-12-12");
         String contactJson = mapper.writeValueAsString(newContact);
         request.setHeader("Content-Type", "application/json");
 
@@ -102,11 +98,7 @@ public class ContactControllerTest {
 
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost request = new HttpPost(URL);
-        Contact newContact = Contact.Builder.newInstance()
-                .withName("Test")
-                .withSurname("Testovich")
-                .withPhone("12-12-12-12")
-                .build();
+        Contact newContact = new Contact("Test","Testovich","12-12-12-12");
         String contactJson = mapper.writeValueAsString(newContact);
         request.setHeader("Content-Type", "application/json");
 
