@@ -5,7 +5,7 @@ import by.fpmi.rest.task.entities.Contact;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MapBasedContactDao implements ContactDao {
+public class ContactDaoImpl implements ContactDao {
 
     private final Map<UUID, Contact> map = new ConcurrentHashMap<>();
 

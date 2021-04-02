@@ -2,8 +2,14 @@ package by.fpmi.rest.task.entities;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 import java.util.Objects;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@ToString
 
 public class Contact {
 
@@ -18,38 +24,6 @@ public class Contact {
 
     @JsonCreator
     public Contact() {
-    }
-
-    public Contact(String name, String surname, String phone) {
-        this.name = name;
-        this.surname = surname;
-        this.phone = phone;
-    }
-
-
-    public String getName() {
-        return name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     @Override
